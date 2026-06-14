@@ -3,7 +3,7 @@ from analyzer import analyze_log
 
 start = time.time()
 
-result = analyze_log("logs/million_logs.log")
+result = analyze_log("logs/five_million_logs.log")
 
 end = time.time()
 

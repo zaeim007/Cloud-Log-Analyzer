@@ -1,122 +1,301 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Analysis Result</title>
+    <title>Cloud Log Analyzer Dashboard</title>
+
+    <link rel="stylesheet"
+            href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
-    <h1>Log Analysis Dashboard</h1>
+<div class="container">
 
-    <h2>Summary</h2>
+    <h1>Cloud Log Analyzer Dashboard</h1>
+    <p style="text-align:center; color:#666;">
+            Cloud-based Log Monitoring and Security Analysis Platform
+    </p>
 
-    <p>Total Requests: {{ data.total_requests }}</p>
+    <h2 class="section-title">Summary</h2>
 
-    <p>Processed Records: {{ data.processed_records }}</p>
+    <div class="card-grid">
 
-    <p>Skipped Records: {{ data.skipped_records }}</p>
+        <div class="card">
+            <h3>Total Requests</h3>
+            <p>{{ "{:,}".format(data.total_requests) }}</p>
+        </div>
 
-    <p>Error Count: {{ data.error_count }}</p>
+        <div class="card">
+            <h3>Processed Records</h3>
+            <p>{{ "{:,}".format(data.processed_records) }}</p>
+        </div>
 
-    <p>Error Rate: {{ data.error_rate }}%</p>
+        <div class="card">
+            <h3>Skipped Records</h3>
+            <p>{{ "{:,}".format(data.skipped_records) }}</p>
+        </div>
 
-    <p>Most Active IP: {{ data.most_active_ip }}</p>
+        <div class="card">
+            <h3>Error Rate</h3>
+            <p>{{ data.error_rate }}%</p>
+        </div>
 
-    <p>Most Visited Page: {{ data.most_visited_page }}</p>
+    </div>
 
-    <hr>
+    <h2 class="section-title">Key Insights</h2>
 
-    <h2>Top 5 IP Addresses</h2>
+    <div class="card-grid">
 
-    <ul>
+        <div class="card">
+            <h3>Most Active IP</h3>
+            <p>{{ data.most_active_ip }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Most Visited Page</h3>
+            <p>{{ data.most_visited_page }}</p>
+        </div>
+
+    </div>
+
+    <h2 class="section-title">Security Alerts</h2>
+
+    <div class="card-grid">
+
+        <div class="card alert-card alert-red">
+            <h3>Suspicious IPs</h3>
+            <p>{{ data.suspicious_ips|length }}</p>
+        </div>
+
+        <div class="card alert-card alert-orange">
+            <h3>Brute Force Attempts</h3>
+            <p>{{ data.brute_force_attempts|length }}</p>
+        </div>
+
+        <div class="card alert-card alert-yellow">
+            <h3>404 Scanners</h3>
+            <p>{{ data.excessive_404_ips|length }}</p>
+        </div>
+
+    </div>
+
+    <h2 class="section-title">Analytics</h2>
+
+<div class="chart-container">
+    <div class="chart-card">
+        <h3>Status Code Distribution</h3>
+        <canvas id="statusChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h3>Top IP Addresses</h3>
+        <canvas id="ipChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h3>Top Pages</h3>
+        <canvas id="pageChart"></canvas>
+    </div>
+</div>
+
+    <h2 class="section-title">Top IP Addresses</h2>
+
+    <table class="data-table">
+        <tr>
+            <th>IP Address</th>
+            <th>Requests</th>
+        </tr>
+
         {% for ip, count in data.top_ips %}
-            <li>{{ ip }} - {{ count }} requests</li>
+        <tr>
+            <td>{{ ip }}</td>
+            <td>{{ "{:,}".format(count) }}</td>
+        </tr>
         {% endfor %}
-    </ul>
+    </table>
 
-    <hr>
+    <h2 class="section-title">Top Pages</h2>
 
-    <h2>Top 5 Pages</h2>
+    <table class="data-table">
+        <tr>
+            <th>Page</th>
+            <th>Visits</th>
+        </tr>
 
-    <ul>
         {% for page, count in data.top_pages %}
-            <li>{{ page }} - {{ count }} visits</li>
+        <tr>
+            <td>{{ page }}</td>
+            <td>{{ "{:,}".format(count) }}</td>
+        </tr>
         {% endfor %}
-    </ul>
+    </table>
 
-    <hr>
+    <h2 class="section-title">Status Code Distribution</h2>
 
-    <h2>Status Code Distribution</h2>
+    <table class="data-table">
+        <tr>
+            <th>Status Code</th>
+            <th>Count</th>
+        </tr>
 
-    <ul>
         {% for status, count in data.status_codes.items() %}
-            <li>{{ status }} - {{ count }}</li>
+        <tr>
+            <td>{{ status }}</td>
+            <td>{{ "{:,}".format(count) }}</td>
+        </tr>
         {% endfor %}
-    </ul>
+    </table>
 
-    <hr>
-
-    <h2>Suspicious IP Detection</h2>
+    <h2 class="section-title">Suspicious IP Detection</h2>
 
     {% if data.suspicious_ips %}
+    <table class="data-table">
+        <tr>
+            <th>IP Address</th>
+            <th>Requests</th>
+        </tr>
 
-        <ul>
-            {% for ip in data.suspicious_ips %}
-                <li>
-                    {{ ip.ip }} - {{ ip.requests }} requests
-                </li>
-            {% endfor %}
-        </ul>
-
+        {% for ip in data.suspicious_ips %}
+        <tr>
+            <td>{{ ip.ip }}</td>
+            <td>{{ "{:,}".format(ip.requests) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
     {% else %}
-
-        <p>No suspicious IPs detected.</p>
-
+        <div class="no-alert">No suspicious IPs detected.</div>
     {% endif %}
-    <hr>
 
-<h2>Brute Force Detection</h2>
+    <h2 class="section-title">Brute Force Detection</h2>
 
-{% if data.brute_force_attempts %}
+    {% if data.brute_force_attempts %}
+    <table class="data-table">
+        <tr>
+            <th>IP Address</th>
+            <th>Failed Attempts</th>
+        </tr>
 
-<ul>
-    {% for attack in data.brute_force_attempts %}
-        <li>
-            {{ attack.ip }}
-            -
-            {{ attack.failed_attempts }}
-            failed login attempts
-        </li>
+        {% for attack in data.brute_force_attempts %}
+        <tr>
+            <td>{{ attack.ip }}</td>
+            <td>{{ "{:,}".format(attack.failed_attempts) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <div class="no-alert">No brute force attacks detected.</div>
+    {% endif %}
+
+    <h2 class="section-title">Excessive 404 Detection</h2>
+
+    {% if data.excessive_404_ips %}
+    <table class="data-table">
+        <tr>
+            <th>IP Address</th>
+            <th>404 Requests</th>
+        </tr>
+
+        {% for attack in data.excessive_404_ips %}
+        <tr>
+            <td>{{ attack.ip }}</td>
+            <td>{{ "{:,}".format(attack.not_found_requests) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <div class="no-alert">No excessive 404 activity detected.</div>
+    {% endif %}
+
+</div>
+
+<script>
+
+const statusLabels = [
+    {% for status in data.status_codes.keys() %}
+        "{{ status }}",
     {% endfor %}
-</ul>
+];
 
-{% else %}
-
-<p>No brute force attacks detected.</p>
-
-{% endif %}
-
-<hr>
-
-<h2>Excessive 404 Detection</h2>
-
-{% if data.excessive_404_ips %}
-
-<ul>
-    {% for attack in data.excessive_404_ips %}
-        <li>
-            {{ attack.ip }}
-            -
-            {{ attack.not_found_requests }}
-            404 requests
-        </li>
+const statusValues = [
+    {% for count in data.status_codes.values() %}
+        {{ count }},
     {% endfor %}
-</ul>
+];
 
-{% else %}
+new Chart(
+    document.getElementById("statusChart"),
+    {
+        type: "bar",
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                label: "Requests",
+                data: statusValues
+            }]
+        }
+    }
+);
 
-<p>No excessive 404 activity detected.</p>
+const ipLabels = [
+    {% for ip, count in data.top_ips %}
+        "{{ ip }}",
+    {% endfor %}
+];
 
-{% endif %}
+const ipValues = [
+    {% for ip, count in data.top_ips %}
+        {{ count }},
+    {% endfor %}
+];
+
+new Chart(
+    document.getElementById("ipChart"),
+    {
+        type: "bar",
+        data: {
+            labels: ipLabels,
+            datasets: [{
+                label: "Requests",
+                data: ipValues
+            }]
+        }
+    }
+);
+
+const pageLabels = [
+    {% for page, count in data.top_pages %}
+        "{{ page }}",
+    {% endfor %}
+];
+
+const pageValues = [
+    {% for page, count in data.top_pages %}
+        {{ count }},
+    {% endfor %}
+];
+
+new Chart(
+    document.getElementById("pageChart"),
+    {
+        type: "bar",
+        data: {
+            labels: pageLabels,
+            datasets: [{
+                label: "Visits",
+                data: pageValues
+            }]
+        }
+    }
+);
+
+</script>
 
 </body>
 </html>
+
+<div style="text-align:center; margin:40px 0;">
+    <a href="/">
+        <button>Analyze Another File</button>
+    </a>
+</div>

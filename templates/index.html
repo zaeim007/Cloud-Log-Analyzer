@@ -2,20 +2,35 @@
 <html>
 <head>
     <title>Cloud Log Analyzer</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
+
+<div class="upload-container">
 
     <h1>Cloud Log Analyzer</h1>
 
+    <p>
+        Upload a .log or .txt file to analyze server activity,
+        detect threats, and generate security insights.
+    </p>
+
     <form action="/upload" method="POST" enctype="multipart/form-data">
 
-        <input type="file" name="logfile">
+        <input type="file" name="logfile" required>
+
+        <br><br>
 
         <button type="submit">
-            Analyze
+            Analyze Logs
         </button>
 
     </form>
+
+</div>
 
 </body>
 </html>
