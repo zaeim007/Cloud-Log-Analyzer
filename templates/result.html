@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analysis Result</title>
+</head>
+<body>
+
+    <h1>Log Analysis Dashboard</h1>
+
+    <h2>Summary</h2>
+
+    <p>Total Requests: {{ data.total_requests }}</p>
+
+    <p>Processed Records: {{ data.processed_records }}</p>
+
+    <p>Skipped Records: {{ data.skipped_records }}</p>
+
+    <p>Error Count: {{ data.error_count }}</p>
+
+    <p>Error Rate: {{ data.error_rate }}%</p>
+
+    <p>Most Active IP: {{ data.most_active_ip }}</p>
+
+    <p>Most Visited Page: {{ data.most_visited_page }}</p>
+
+    <hr>
+
+    <h2>Top 5 IP Addresses</h2>
+
+    <ul>
+        {% for ip, count in data.top_ips %}
+            <li>{{ ip }} - {{ count }} requests</li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <h2>Top 5 Pages</h2>
+
+    <ul>
+        {% for page, count in data.top_pages %}
+            <li>{{ page }} - {{ count }} visits</li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <h2>Status Code Distribution</h2>
+
+    <ul>
+        {% for status, count in data.status_codes.items() %}
+            <li>{{ status }} - {{ count }}</li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <h2>Suspicious IP Detection</h2>
+
+    {% if data.suspicious_ips %}
+
+        <ul>
+            {% for ip in data.suspicious_ips %}
+                <li>
+                    {{ ip.ip }} - {{ ip.requests }} requests
+                </li>
+            {% endfor %}
+        </ul>
+
+    {% else %}
+
+        <p>No suspicious IPs detected.</p>
+
+    {% endif %}
+    <hr>
+
+<h2>Brute Force Detection</h2>
+
+{% if data.brute_force_attempts %}
+
+<ul>
+    {% for attack in data.brute_force_attempts %}
+        <li>
+            {{ attack.ip }}
+            -
+            {{ attack.failed_attempts }}
+            failed login attempts
+        </li>
+    {% endfor %}
+</ul>
+
+{% else %}
+
+<p>No brute force attacks detected.</p>
+
+{% endif %}
+
+<hr>
+
+<h2>Excessive 404 Detection</h2>
+
+{% if data.excessive_404_ips %}
+
+<ul>
+    {% for attack in data.excessive_404_ips %}
+        <li>
+            {{ attack.ip }}
+            -
+            {{ attack.not_found_requests }}
+            404 requests
+        </li>
+    {% endfor %}
+</ul>
+
+{% else %}
+
+<p>No excessive 404 activity detected.</p>
+
+{% endif %}
+
+</body>
+</html>
