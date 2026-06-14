@@ -2,3 +2,8 @@ __pycache__/
 *.pyc
 
 logs/*.log
+
+generate_million_logs.py
+generate_5million_log.py
+generate_logs.py
+generate_security_dataset.py
