@@ -1,0 +1,19 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# Git
+.git
+.gitignore
+
+# VS Code
+.vscode/
+
+# Logs
+logs/
+
+# Environment variables
+.env

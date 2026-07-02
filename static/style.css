@@ -208,7 +208,7 @@ h1 {
 }
 
 /* =========================
-   Charts
+Charts
 ========================= */
 
 .chart-container {
@@ -235,9 +235,3 @@ canvas {
     width: 100% !important;
     max-height: 400px;
 }
-
-<div style="text-align:center; margin:40px 0;">
-    <a href="/">
-        <button>Analyze Another File</button>
-    </a>
-</div>
