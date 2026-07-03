@@ -1,7 +1,7 @@
 __pycache__/
 *.pyc
 
-logs/*.log
+logs/
 
 generate_million_logs.py
 generate_5million_log.py
