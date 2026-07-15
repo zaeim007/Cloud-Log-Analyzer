@@ -1,0 +1,39 @@
+name: Deploy Cloud Log Analyzer
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+
+          script: |
+            set -e
+
+            echo "Changing to project directory..."
+            cd ~/Cloud-Log-Analyzer
+
+            echo "Pulling latest code..."
+            git pull origin main
+
+            echo "Building and starting Docker containers..."
+            docker compose up --build -d
+
+            echo "Removing unused Docker images..."
+            docker image prune -f
+
+            echo "Deployment completed successfully."
